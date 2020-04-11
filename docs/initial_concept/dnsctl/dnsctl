@@ -1,0 +1,92 @@
+#!/usr/bin/python3
+import sys
+import os
+import subprocess
+
+CONF = {
+    "ETCD_HOST": "10.0.0.2",
+    "ETCD_PORT": 2379,
+    "ETCD_PROTO": "http",
+    "ETCD_API_VERSION": "3",
+}
+
+DOCUMENTATION = """
+    DNSCTL
+    ------
+
+    Adds an A RECORD to
+    an etcd database for use with CoreDNS
+    
+    this script is simple and assumes you are using it 
+    right. Not much validation is done.
+
+    Requirements:
+        - etcdctl installed locally
+        - etcd cluster, accessable from the client
+
+    Arguments:
+        1: zone
+        2: FQDN
+        3: host ip
+        
+    Procedure:
+        - establish connection to etcd
+        - read arguments
+        - create a record
+        - create ptr record
+"""
+
+
+def generate_a_record_path(zone, fqdn):
+    """
+    Turns
+        zone: ra
+        fqdn: my.site.ra
+    into
+        /ra/ra/site/my
+
+    For storage with etcd
+
+    :param zone: zone path for coredns
+    :param fqdn: the desired fqdn to create with this zone
+    :return: string, etcd path
+    """
+    return "/" + zone + "/" + '/'.join(fqdn.split(".")[::-1])
+
+
+def create_a_record(zone, fqdn, host_ip, env, endpoint):
+    # generating path from input
+    a_record_path = generate_a_record_path(zone, fqdn)
+
+    # generating a record from input
+    a_record_json = '{"host":"' + host_ip + '","ttl":60}'
+
+    # generating command to run
+    a_record_command = ['etcdctl', 'put', a_record_path, a_record_json, endpoint]
+
+    print(' '.join(a_record_command))
+
+    # creating Popen command
+    a_record_popen = subprocess.Popen(a_record_command, stdout=subprocess.PIPE, env=env)
+
+    assert a_record_popen.communicate()[0] == b'OK\n'
+
+
+if __name__ == "__main__":
+
+    try:
+        zone = str(sys.argv[1])
+        fqdn = str(sys.argv[2])
+        host_ip = str(sys.argv[3])
+    except IndexError:
+        print("Error: Invalid arguments")
+        print(DOCUMENTATION)
+        exit(-1)
+
+    # setting up environment
+    endpoint = f"--endpoints={CONF['ETCD_HOST']}:{CONF['ETCD_PORT']}"
+    env = os.environ.copy()
+    env["ETCDCTL_API"] = CONF["ETCD_API_VERSION"]
+
+    # creating A record
+    create_a_record(zone, fqdn, host_ip, env, endpoint)

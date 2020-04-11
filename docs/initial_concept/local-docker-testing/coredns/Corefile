@@ -1,0 +1,15 @@
+.:53 {
+	log 
+	errors
+}
+
+bor {
+	log 
+	errors
+	etcd  {
+		path /bor
+		endpoint http://10.0.0.2:2379
+	}
+}
+
+

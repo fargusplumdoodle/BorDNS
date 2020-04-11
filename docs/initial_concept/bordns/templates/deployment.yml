@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dns-deployment
+  labels:
+    app: dns
+spec:
+  selector:
+    matchLabels:
+      app: dns
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dns
+    spec:
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: etcd-pvc
+        - name: corefile
+          configMap:
+            name: dns-corefile-cm
+      containers:
+        - name: coredns
+          image: coredns/coredns
+          ports:
+            - containerPort: 53
+          volumeMounts:
+            - name: corefile
+              mountPath: /root/Corefile
+              subPath: Corefile
+          args: ["-conf", "/root/Corefile"]
+
+        - name: etcd
+          image: quay.io/coreos/etcd:latest
+          ports:
+            - containerPort: 2379
+          volumeMounts:
+            - name: data
+              mountPath: /var/run/etcd
+          command:
+            - /bin/sh
+            - -c
+            - |
+                etcd --name etcd \
+                --listen-client-urls=http://0.0.0.0:2379 \
+                --listen-peer-urls=http://localhost:2380 \
+                --advertise-client-urls=http://{{ .Values.serviceIP }}:2379 \
+                --initial-cluster-token=etcd-cluster-1 \
+                --initial-cluster=etcd=http://localhost:2380 \
+                --initial-cluster-state=new \
+                --data-dir=/var/run/etcd/default.etcd

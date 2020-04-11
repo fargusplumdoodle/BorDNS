@@ -1,0 +1,6 @@
+apiVersion: v2
+name: bordns
+description: This is a simple DNS server using CoreDNS and etcd. 
+type: application
+version: 0.1.0
+appVersion: 1.16.0
