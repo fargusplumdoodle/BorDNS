@@ -1,0 +1,11 @@
+# BorDNS Config File
+# -----------------
+# This is just for development
+# replace with the config for your
+# environment!
+
+
+etcd_hosts:
+  - "172.19.0.3:2379"
+
+listen_address: ":8000"

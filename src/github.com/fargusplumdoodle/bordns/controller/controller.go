@@ -1,11 +1,19 @@
 package controller
 
-import "github.com/gorilla/mux"
+import (
+	"github.com/gorilla/mux"
+	"go.etcd.io/etcd/clientv3"
+)
 
 var (
 	domainController domain
 )
 
-func Startup(r *mux.Router) {
+func Startup(cli *clientv3.Client) *mux.Router {
+	r := mux.NewRouter()
+
 	domainController.registerRoutes(r)
+	println(cli)
+
+	return r
 }
