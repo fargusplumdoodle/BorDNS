@@ -5,9 +5,22 @@ services:
     volumes:
       - ./docker/etcd-entrypoint.sh:/entrypoint.sh
     command: sh /entrypoint.sh
+    networks:
+      dnsnet:
+        ipv4_address: 172.19.0.3
   dns:
     image: coredns/coredns
     volumes:
       - ./docker/coredns_config/Corefile:/root/Corefile
     command: -conf /root/Corefile
-  
+    networks:
+      dnsnet:
+        ipv4_address: 172.19.0.2
+
+networks:
+  dnsnet:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.0/16
+
