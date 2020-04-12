@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"github.com/fargusplumdoodle/bordns/conf"
 	"go.etcd.io/etcd/clientv3"
@@ -21,7 +22,7 @@ func SetupDB(etcdHosts []string) {
 	if err != nil {
 		panic(fmt.Errorf("unable to connect to etcd: %q", err))
 	}
-	defer cli.Close()
+	// defer cli.Close()
 
 	client = cli
 }
@@ -42,11 +43,59 @@ Zones: zone.bor, .bor
 Input: test.zone.bor
 Match: zone.bor
 
-Procedure:
-	1. Convert all inputs to reversed slices, seperated by "."
+
+Explanation:
+Creates lists of the hostnames and reverses them. So
+zone.bor -> "bor", "zone"
+
+then loops from start to finish through the known zones checking each
+element on the provided host and the zone we are checking for.
+
+As soon as we find an element that is in the zone we are checking for
+but NOT in the provided host, we go to the next zone to check for
+
+We take the zone that has the most elements in common with the provided
+host. Or just return an error if we couldnt find it
 */
 func getZoneFromHost(host string) (conf.ZoneConfig, error) {
 	zc := conf.ZoneConfig{}
+
+	// 1. getting reversed host
+	reversedHost := getReversedDomain(host)
+	var longestZone = 0
+
+	// looping through recognized zones
+	for _, zone := range conf.Env.Zones {
+		// getting reversed zone
+		reverseDomain := getReversedDomain(zone.Zone)
+		var match = false
+
+		// looping until we find two elements that dont match
+		for i := 0; i < len(reverseDomain); i++ {
+			if reverseDomain[i] != reversedHost[i] {
+				match = false
+				break
+			} else {
+				match = true
+			}
+		}
+		// setting the zone if its the longest
+		if match && len(reverseDomain) > longestZone {
+			longestZone = len(reverseDomain)
+			zc = zone
+		}
+	}
+
+	// checking if any  zones were found
+	if longestZone == 0 {
+		// no zones were found, informing the user of the known zones because we are nice
+		var knownZones = []string{}
+		for _, zone := range conf.Env.Zones {
+			knownZones = append(knownZones, zone.Zone)
+		}
+		return zc, errors.New(fmt.Sprintf(
+			"host does not match any known zones, known zones: [%v]", strings.Join(knownZones, ", ")))
+	}
 
 	return zc, nil
 }
@@ -68,6 +117,18 @@ func getReversedDomain(host string) []string {
 	return reverseSlice(split)
 }
 
+/*
+Performs the inverse operation of getReversedDomain
+
+Example:
+  in: []string{"bor", "test", "longer"}
+  out: "longer.test.bor"
+*/
+func unReverseDomain(reversedDomain []string) string {
+	unreversed := reverseSlice(reversedDomain)
+	return strings.Join(unreversed, ".")
+}
+
 func reverseSlice(a []string) []string {
 	/*
 		Reverses the order of the elements of a slice:
@@ -79,4 +140,8 @@ func reverseSlice(a []string) []string {
 	}
 
 	return a
+}
+
+func getARecordValue(ip string) string {
+	return fmt.Sprintf(`{"host":"%v","ttl":%v}`, ip, conf.DEFAULT_TTL)
 }

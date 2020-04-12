@@ -25,7 +25,6 @@ func (f fqdn) registerRoutes(r *mux.Router) {
 }
 
 func handleFQDNS(w http.ResponseWriter, r *http.Request) {
-	// TODO: validation
 	// Validation
 	queryString, err := validateRequest(r)
 	if err != nil {
@@ -44,6 +43,8 @@ func handleFQDNS(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			respondBadRequest(w, err)
 			return
+		} else {
+			w.WriteHeader(http.StatusCreated)
 		}
 	case http.MethodDelete:
 		// TODO: delete the A record
