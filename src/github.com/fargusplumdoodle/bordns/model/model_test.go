@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"fmt"
 	"github.com/fargusplumdoodle/bordns/conf"
 	"testing"
 )
@@ -182,4 +183,41 @@ func TestAddARecordValid(t *testing.T) {
 
 }
 
-// TODO: INVALID
+/*
+Test Add A Record Invalid
+------------------
+
+Attempts to add FQDNS that dont belong to any known zones
+1. Set zones and create test table
+2. Call AddARecord for each test in the table
+3. Ensure IP was set to the appropriate path in Etcd
+*/
+func TestAddARecordInvalid(t *testing.T) {
+	// 1.  setting zones and making table
+	conf.Env = &conf.Config{
+		EtcdHosts:  []string{ETCD_HOST},
+		ListenAddr: "",
+		Zones: []conf.ZoneConfig{
+			{Zone: "bor", EtcdPath: "/bor"},
+			{Zone: "sekhnet.ra", EtcdPath: "/ra/sekhnet"},
+		},
+	}
+	SetupDB(conf.Env.EtcdHosts)
+	table := []struct {
+		host string
+		ip   string
+	}{
+		{"google.ca", "10.0.0.1"},
+		{"another.website", "10.0.1.1"},
+	}
+
+	// 2.
+	for _, x := range table {
+		err := AddARecord(x.host, x.ip) // 0. Host, 1. IP
+
+		if err == nil {
+			t.Error(fmt.Sprintf("should have failed adding host (%q, %q)", x.host, x.ip))
+		}
+	}
+
+}
