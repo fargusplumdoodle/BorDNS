@@ -19,7 +19,10 @@ func main() {
 	// logging requests
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
 
+	//
 	fmt.Println("Starting BorDNS API on port 8000")
 	http.ListenAndServe(":8000", loggedRouter)
+
+	// this should never execute
 	fmt.Println("Exiting! There was probably an error")
 }

@@ -12,6 +12,7 @@ func (d domain) registerRoutes(r *mux.Router) {
 }
 
 func handleDomains(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("eyyyy"))
+	w.WriteHeader(http.StatusNotImplemented)
+	w.Write([]byte("TODO: show list of domains that are registered"))
+	// TODO: show list of domains that are registered
 }
