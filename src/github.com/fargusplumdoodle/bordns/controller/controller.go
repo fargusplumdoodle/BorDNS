@@ -2,7 +2,6 @@ package controller
 
 import (
 	"github.com/gorilla/mux"
-	"go.etcd.io/etcd/clientv3"
 )
 
 var (
@@ -10,12 +9,12 @@ var (
 	fqdnController   fqdn
 )
 
-func Startup(cli *clientv3.Client) *mux.Router {
+func Startup() *mux.Router {
 	// Creating router
 	r := mux.NewRouter()
 
 	domainController.registerRoutes(r)
-	fqdnController.registerRoutes(r, cli)
+	fqdnController.registerRoutes(r)
 
 	return r
 }

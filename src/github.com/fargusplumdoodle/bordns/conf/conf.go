@@ -10,16 +10,19 @@ BorDNS API
 
 import (
 	"fmt"
-	"go.etcd.io/etcd/clientv3"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"time"
 )
 
 const (
-	COREFILE    = "Corefile"
 	CONFIG_FILE = "config.yml"
 	DB_TIMEOUT  = 5 * time.Second
+	DEFAULT_TTL = 60
+)
+
+var (
+	Env *Config
 )
 
 // config, yaml config must match this
@@ -34,22 +37,7 @@ type ZoneConfig struct {
 	EtcdPath string `yaml:"path"`
 }
 
-func SetupDB(etcdHosts []string) *clientv3.Client {
-	cli, err := clientv3.New(clientv3.Config{
-		Endpoints:   etcdHosts,
-		DialTimeout: DB_TIMEOUT,
-		// TODO: AUTHENTICATION
-		//Username:             "",
-		//Password:             "",
-	})
-	if err != nil {
-		panic(fmt.Errorf("unable to connect to etcd: %q", err))
-	}
-	defer cli.Close()
-	return cli
-}
-
-func GetConfig() *Config {
+func SetupConfig() {
 	var conf Config
 
 	// reading config
@@ -62,5 +50,5 @@ func GetConfig() *Config {
 		panic(fmt.Errorf("invalid conf: %q", CONFIG_FILE))
 	}
 
-	return &conf
+	Env = &conf
 }
