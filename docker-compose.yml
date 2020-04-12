@@ -1,0 +1,13 @@
+version: "3"
+services:
+  etcd:
+    image: quay.io/coreos/etcd
+    volumes:
+      - ./docker/etcd-entrypoint.sh:/entrypoint.sh
+    command: sh /entrypoint.sh
+  dns:
+    image: coredns/coredns
+    volumes:
+      - ./docker/coredns_config/Corefile:/root/Corefile
+    command: -conf /root/Corefile
+  

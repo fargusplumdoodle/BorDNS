@@ -4,7 +4,7 @@ import os
 import subprocess
 
 CONF = {
-    "ETCD_HOST": "10.0.0.2",
+    "ETCD_HOST": "172.19.0.3",
     "ETCD_PORT": 2379,
     "ETCD_PROTO": "http",
     "ETCD_API_VERSION": "3",
