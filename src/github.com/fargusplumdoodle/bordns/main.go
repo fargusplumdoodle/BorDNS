@@ -2,19 +2,19 @@ package main
 
 import (
 	"fmt"
+	conf2 "github.com/fargusplumdoodle/bordns/conf"
 	"github.com/fargusplumdoodle/bordns/controller"
 	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 	"net/http"
 	"os"
 )
 
 func main() {
 	// reading config
-	conf := getConfig()
+	conf := conf2.GetConfig()
 
 	// TODO: setup connection to etcd
-	cli := setupDB(conf.EtcdHosts)
+	cli := conf2.SetupDB(conf.EtcdHosts)
 
 	// start controllers
 	r := controller.Startup(cli)

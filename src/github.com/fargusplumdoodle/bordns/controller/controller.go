@@ -7,13 +7,15 @@ import (
 
 var (
 	domainController domain
+	fqdnController   fqdn
 )
 
 func Startup(cli *clientv3.Client) *mux.Router {
+	// Creating router
 	r := mux.NewRouter()
 
 	domainController.registerRoutes(r)
-	println(cli)
+	fqdnController.registerRoutes(r, cli)
 
 	return r
 }
