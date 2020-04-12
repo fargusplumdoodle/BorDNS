@@ -26,29 +26,3 @@ func AddARecord(host string, ip string) error {
 
 	return nil
 }
-
-/*
-Determine if host is in existing zone
----------------
-
-Looks through all of the zones from the config and
-
-
-Returns: conf.ZoneConfig
-func getZoneFromHost(host string) (conf.ZoneConfig, error) {
-	return nil, nil
-}
-*/
-
-func reverseSlice(a []string) []string {
-	/*
-		Reverses the order of the elements of a slice:
-		Credit: https://github.com/golang/go/wiki/SliceTricks
-	*/
-	for i := len(a)/2 - 1; i >= 0; i-- {
-		opp := len(a) - 1 - i
-		a[i], a[opp] = a[opp], a[i]
-	}
-
-	return a
-}
