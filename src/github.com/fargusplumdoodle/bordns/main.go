@@ -15,7 +15,7 @@ func main() {
 	conf.SetupConfig()
 
 	// connecting to etcd
-	model.SetupDB(conf.Env.EtcdHosts)
+	client := model.SetupDB(conf.Env.EtcdHosts)
 
 	// start controllers
 	r := controller.Startup()
@@ -24,7 +24,7 @@ func main() {
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
 
 	// running server!
-	fmt.Println("Starting BorDNS API on port 8000")
+	fmt.Println("Starting BorDNS API on port 8000, connected to etcd", client.Endpoints())
 	http.ListenAndServe(conf.Env.ListenAddr, loggedRouter)
 
 	// this should never execute, im still learning this all

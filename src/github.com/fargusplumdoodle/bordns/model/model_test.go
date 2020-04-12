@@ -138,7 +138,7 @@ func TestAddARecordValid(t *testing.T) {
 			{Zone: "sekhnet.ra", EtcdPath: "/ra/sekhnet"},
 		},
 	}
-	SetupDB(conf.Env.EtcdHosts)
+	client = SetupDB(conf.Env.EtcdHosts)
 	table := []struct {
 		in  []string // 0. Host, 1. IP
 		out string   // out is the expected etcd path.
@@ -202,7 +202,7 @@ func TestAddARecordInvalid(t *testing.T) {
 			{Zone: "sekhnet.ra", EtcdPath: "/ra/sekhnet"},
 		},
 	}
-	SetupDB(conf.Env.EtcdHosts)
+	_ = SetupDB(conf.Env.EtcdHosts)
 	table := []struct {
 		host string
 		ip   string
@@ -217,6 +217,64 @@ func TestAddARecordInvalid(t *testing.T) {
 
 		if err == nil {
 			t.Error(fmt.Sprintf("should have failed adding host (%q, %q)", x.host, x.ip))
+		}
+	}
+
+}
+
+/*
+Test Get IP for host
+------------------
+1. Set zones and create test table
+2. loop through table
+	2.1 add A record
+	2.2 Call GetCoreDNSRecordForHost
+	2.3 Make sure the proper IP was returned
+*/
+func TestGetIpForHost(t *testing.T) {
+	// 1.  setting zones and making table
+	conf.Env = &conf.Config{
+		EtcdHosts:  []string{ETCD_HOST},
+		ListenAddr: "",
+		Zones: []conf.ZoneConfig{
+			{Zone: "bor", EtcdPath: "/bor"},
+			{Zone: "sekhnet.ra", EtcdPath: "/ra/sekhnet"},
+		},
+	}
+	client = SetupDB(conf.Env.EtcdHosts)
+	table := []struct {
+		dns    string
+		record CoreDNSARecord
+		path   string
+	}{
+		{"test.bor", CoreDNSARecord{"10.0.4.1", conf.DEFAULT_TTL}, "/bor/bor/test"},
+		{"another.test.bor", CoreDNSARecord{"10.0.3.1", conf.DEFAULT_TTL}, "/bor/bor/test/another"},
+		{"a.sekhnet.ra", CoreDNSARecord{"10.0.2.1", conf.DEFAULT_TTL}, "/ra/sekhnet/ra/sekhnet/a"},
+		{"b.a.sekhnet.ra", CoreDNSARecord{"10.0.1.1", conf.DEFAULT_TTL}, "/ra/sekhnet/ra/sekhnet/a/b"},
+	}
+
+	// 2.
+	for _, x := range table {
+		// 2.1
+		ctx, cancel := context.WithTimeout(context.Background(), conf.DB_TIMEOUT)
+		_, err := client.Put(ctx, x.path, getARecordValue(x.record.Host))
+		cancel()
+
+		if err != nil {
+			t.Fatalf("Error occured settings value of %q:  %q", x.path, err)
+		}
+
+		// 2.2
+		result, err := GetCoreDNSRecordForHost(x.dns)
+
+		if err != nil {
+			t.Fatalf("Error returned from GetCoreDNSRecordForHost %q", err)
+		}
+
+		// 2.3
+		if result != x.record {
+			t.Fatalf("Invalid value in database for %q.  expected: %q, got: %q",
+				x.path, x.record, result)
 		}
 	}
 

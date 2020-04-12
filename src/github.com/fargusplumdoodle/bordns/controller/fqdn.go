@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/fargusplumdoodle/bordns/model"
+	"github.com/fargusplumdoodle/bordns/viewmodel"
 	"github.com/gorilla/mux"
 	"net"
 	"net/http"
@@ -33,7 +35,16 @@ func handleFQDNS(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		// TODO: retrieve IP of fqdn
+		ip, err := model.GetCoreDNSRecordForHost(queryString["FQDN"][0])
+		if err != nil {
+			respondBadRequest(w, err)
+			return
+		} else {
+			// This should probably be JSON encoded
+			w.WriteHeader(http.StatusOK)
+			encodeARecord(w, queryString["FQDN"][0], ip.Host)
+
+		}
 	case http.MethodPost:
 		err = model.AddARecord(
 			queryString["FQDN"][0],
@@ -44,6 +55,7 @@ func handleFQDNS(w http.ResponseWriter, r *http.Request) {
 			return
 		} else {
 			w.WriteHeader(http.StatusCreated)
+			encodeARecord(w, queryString["FQDN"][0], queryString["IP"][0])
 		}
 	case http.MethodDelete:
 		// TODO: delete the A record
@@ -57,6 +69,27 @@ func respondBadRequest(w http.ResponseWriter, err error) {
 	w.Write([]byte(fmt.Sprintf(
 		"bad request: %q", err.Error(),
 	)))
+}
+
+func encodeARecord(w http.ResponseWriter, fqdn, ip string) {
+	/*
+		Writes A record response
+	*/
+	aRecord := viewmodel.Arecord{
+		IP:   ip,
+		FQDN: fqdn,
+	}
+
+	// encoding A record
+	enc := json.NewEncoder(w)
+	err := enc.Encode(&aRecord)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("internal server error"))
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+	}
 }
 
 /*
