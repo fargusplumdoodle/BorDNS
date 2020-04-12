@@ -13,7 +13,7 @@ func main() {
 	// reading config
 	conf := conf2.GetConfig()
 
-	// TODO: setup connection to etcd
+	// connecting to etcd
 	cli := conf2.SetupDB(conf.EtcdHosts)
 
 	// start controllers

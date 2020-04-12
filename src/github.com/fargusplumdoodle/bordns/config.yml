@@ -9,3 +9,9 @@ etcd_hosts:
   - "172.19.0.3:2379"
 
 listen_address: ":8000"
+
+zones:
+- zone: bor
+  path: /bor
+- zone: sekhnet.ra
+  path: /ra/sekhnet
