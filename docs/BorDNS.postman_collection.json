@@ -1,0 +1,155 @@
+{
+	"info": {
+		"_postman_id": "003aa6d3-b62a-45b0-81f6-ae59ec5a724a",
+		"name": "BorDNS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create A Record",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Name\": \"dargsr\",\n\t\"email\": \"fargus@sekhnet.ra\",\n\t\"password\": \"1234asdf\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{HOST}}:{{PORT}}/fqdn?FQDN=test.bor&IP=10.0.0.1",
+					"protocol": "http",
+					"host": [
+						"{{HOST}}"
+					],
+					"port": "{{PORT}}",
+					"path": [
+						"fqdn"
+					],
+					"query": [
+						{
+							"key": "FQDN",
+							"value": "test.bor"
+						},
+						{
+							"key": "IP",
+							"value": "10.0.0.1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get A Record",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Name\": \"dargsr\",\n\t\"email\": \"fargus@sekhnet.ra\",\n\t\"password\": \"1234asdf\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{HOST}}:{{PORT}}/fqdn?FQDN=test.bor",
+					"protocol": "http",
+					"host": [
+						"{{HOST}}"
+					],
+					"port": "{{PORT}}",
+					"path": [
+						"fqdn"
+					],
+					"query": [
+						{
+							"key": "FQDN",
+							"value": "test.bor"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete A Record",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Name\": \"dargsr\",\n\t\"email\": \"fargus@sekhnet.ra\",\n\t\"password\": \"1234asdf\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{HOST}}:{{PORT}}/fqdn?FQDN=test.bor",
+					"protocol": "http",
+					"host": [
+						"{{HOST}}"
+					],
+					"port": "{{PORT}}",
+					"path": [
+						"fqdn"
+					],
+					"query": [
+						{
+							"key": "FQDN",
+							"value": "test.bor"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "640bd6ac-e682-4b3e-92b1-16be4deb3741",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "32fd7b8c-a3e9-4808-a605-3a4c1609a460",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "e380a88f-fcfa-4a9c-9dd5-221bdb096aa3",
+			"key": "HOST",
+			"value": "localhost",
+			"type": "string"
+		},
+		{
+			"id": "4f7cb165-baac-4da3-88b8-6700f8f7c242",
+			"key": "PORT",
+			"value": "8000",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
