@@ -15,15 +15,10 @@ func SetupDB(etcdHosts []string) *clientv3.Client {
 	cli, err := clientv3.New(clientv3.Config{
 		Endpoints:   etcdHosts,
 		DialTimeout: conf.DB_TIMEOUT,
-		// TODO: AUTHENTICATION
-		//Username:             "",
-		//Password:             "",
 	})
 	if err != nil {
 		panic(fmt.Errorf("unable to connect to etcd: %q", err))
 	}
-	// TODO: FIGURE THIS OUT
-	// defer cli.Close()
 
 	client = cli
 

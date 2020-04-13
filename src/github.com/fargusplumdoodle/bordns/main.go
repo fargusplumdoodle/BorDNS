@@ -16,6 +16,7 @@ func main() {
 
 	// connecting to etcd
 	client := model.SetupDB(conf.Env.EtcdHosts)
+	defer client.Close()
 
 	// start controllers
 	r := controller.Startup()
