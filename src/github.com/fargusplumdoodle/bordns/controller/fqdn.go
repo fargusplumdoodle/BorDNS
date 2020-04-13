@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/fargusplumdoodle/bordns/conf"
 	"github.com/fargusplumdoodle/bordns/model"
 	"github.com/fargusplumdoodle/bordns/viewmodel"
+	"github.com/goji/httpauth"
 	"github.com/gorilla/mux"
 	"net"
 	"net/http"
@@ -22,10 +24,10 @@ const (
 var domainPattern, _ = regexp.Compile(DOMAIN_REGEX)
 
 func (f fqdn) registerRoutes(r *mux.Router) {
-	r.HandleFunc("/fqdn", handleFQDNS)
+	r.Handle("/fqdn", httpauth.SimpleBasicAuth(conf.Env.AuthUsername, conf.Env.AuthPassword)(f))
 }
 
-func handleFQDNS(w http.ResponseWriter, r *http.Request) {
+func (f fqdn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Validation
 	queryString, err := validateRequest(r)
 	if err != nil {

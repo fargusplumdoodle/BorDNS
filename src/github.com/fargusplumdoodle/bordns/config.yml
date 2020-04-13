@@ -10,6 +10,11 @@ etcd_hosts:
 
 listen_address: ":8000"
 
+# This application uses HTTP Basic Auth. Include this header:
+#   Authorization: Basic username:password
+auth_username: dev
+auth_password: dev
+
 zones:
 - zone: bor
   path: /bor

@@ -115,6 +115,21 @@
 			"response": []
 		}
 	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "dev",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "dev",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -139,13 +154,13 @@
 	],
 	"variable": [
 		{
-			"id": "e380a88f-fcfa-4a9c-9dd5-221bdb096aa3",
+			"id": "47e5098f-a160-4026-8a98-395997378ce6",
 			"key": "HOST",
 			"value": "localhost",
 			"type": "string"
 		},
 		{
-			"id": "4f7cb165-baac-4da3-88b8-6700f8f7c242",
+			"id": "c305cc1b-ba31-44c5-8ceb-6af8c266fa98",
 			"key": "PORT",
 			"value": "8000",
 			"type": "string"

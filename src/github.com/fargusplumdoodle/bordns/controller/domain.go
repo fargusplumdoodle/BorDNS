@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"github.com/fargusplumdoodle/bordns/conf"
+	"github.com/goji/httpauth"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -8,10 +10,10 @@ import (
 type domain struct{}
 
 func (d domain) registerRoutes(r *mux.Router) {
-	r.HandleFunc("/domain", handleDomains)
+	r.Handle("/domain", httpauth.SimpleBasicAuth(conf.Env.AuthUsername, conf.Env.AuthPassword)(d))
 }
 
-func handleDomains(w http.ResponseWriter, r *http.Request) {
+func (d domain) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 	w.Write([]byte("TODO: show list of domains that are registered"))
 	// TODO: show list of domains that are registered

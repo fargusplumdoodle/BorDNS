@@ -22,15 +22,17 @@ const (
 )
 
 var (
-	Env *Config
+	Env        *Config
 	configFile = os.Getenv("CONFIG")
 )
 
 // config, yaml config must match this
 type Config struct {
-	EtcdHosts  []string     `yaml:"etcd_hosts"`
-	ListenAddr string       `yaml:"listen_address"`
-	Zones      []ZoneConfig `yaml:"zones"`
+	EtcdHosts    []string     `yaml:"etcd_hosts"`
+	ListenAddr   string       `yaml:"listen_address"`
+	Zones        []ZoneConfig `yaml:"zones"`
+	AuthUsername string       `yaml:"auth_username"`
+	AuthPassword string       `yaml:"auth_password"`
 }
 
 type ZoneConfig struct {
