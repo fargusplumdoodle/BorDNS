@@ -58,8 +58,15 @@ func handleFQDNS(w http.ResponseWriter, r *http.Request) {
 			encodeARecord(w, queryString["FQDN"][0], queryString["IP"][0])
 		}
 	case http.MethodDelete:
-		// TODO: delete the A record
-	default:
+		err = model.DeleteARecord(
+			queryString["FQDN"][0],
+		)
+		if err != nil {
+			respondBadRequest(w, err)
+			return
+		} else {
+			w.WriteHeader(http.StatusCreated)
+		}
 	}
 
 }

@@ -277,5 +277,68 @@ func TestGetIpForHost(t *testing.T) {
 				x.path, x.record, result)
 		}
 	}
+}
 
+/*
+Test Delete A Record
+------------------
+1. Set zones and create test table
+2. loop through table
+	2.1 add A record manually
+	2.2 Call DeleteARecord
+	2.3 make sure record was properly deleted
+*/
+func TestDeleteARecord(t *testing.T) {
+	// 1.  setting zones and making table
+	conf.Env = &conf.Config{
+		EtcdHosts:  []string{ETCD_HOST},
+		ListenAddr: "",
+		Zones: []conf.ZoneConfig{
+			{Zone: "bor", EtcdPath: "/bor"},
+			{Zone: "sekhnet.ra", EtcdPath: "/ra/sekhnet"},
+		},
+	}
+	client = SetupDB(conf.Env.EtcdHosts)
+	table := []struct {
+		dns    string
+		record CoreDNSARecord
+		path   string
+	}{
+		{"test.bor", CoreDNSARecord{"10.0.4.1", conf.DEFAULT_TTL}, "/bor/bor/test"},
+		{"another.test.bor", CoreDNSARecord{"10.0.3.1", conf.DEFAULT_TTL}, "/bor/bor/test/another"},
+		{"a.sekhnet.ra", CoreDNSARecord{"10.0.2.1", conf.DEFAULT_TTL}, "/ra/sekhnet/ra/sekhnet/a"},
+		{"b.a.sekhnet.ra", CoreDNSARecord{"10.0.1.1", conf.DEFAULT_TTL}, "/ra/sekhnet/ra/sekhnet/a/b"},
+	}
+
+	// 2.
+	for _, x := range table {
+		// 2.1
+		ctx, cancel := context.WithTimeout(context.Background(), conf.DB_TIMEOUT)
+		_, err := client.Put(ctx, x.path, getARecordValue(x.record.Host))
+		cancel()
+
+		if err != nil {
+			t.Fatalf("Error occured settings value of %q:  %q", x.path, err)
+		}
+
+		// 2.2
+		err = DeleteARecord(x.dns)
+
+		if err != nil {
+			t.Fatalf("Error deleting record %q, error:  %q", x.dns, err)
+		}
+
+		// 2.3
+		ctx, cancel = context.WithTimeout(context.TODO(), conf.DB_TIMEOUT)
+		result, err := client.Get(ctx, x.path)
+		cancel()
+
+		if err != nil {
+			t.Fatalf("error: unable to see if record was deleted")
+		}
+		if len(result.Kvs) != 0 {
+			t.Fatalf("record not properly deleted: %q", result.Kvs)
+		}
+
+	}
 }

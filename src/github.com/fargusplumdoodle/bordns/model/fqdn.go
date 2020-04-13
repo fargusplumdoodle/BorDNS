@@ -89,3 +89,32 @@ func GetCoreDNSRecordForHost(host string) (CoreDNSARecord, error) {
 	}
 	return aRecord, errors.New("did not find IP of host " + host)
 }
+
+func DeleteARecord(host string) error {
+	/*
+		Delete A Record!
+
+		Procedure:
+			1. Get zone from host
+			2. Get path from host/zone
+			3. Delete path from etcd
+	*/
+
+	// 1.
+	zone, err := getZoneFromHost(host)
+	if err != nil {
+		return err
+	}
+
+	// 2. Converting to etcd path.
+	reversedHostDomain := getReversedDomain(host)
+	path := zone.EtcdPath + "/" + strings.Join(reversedHostDomain, "/")
+
+	// 3.
+	ctx, cancel := context.WithTimeout(context.Background(), conf.DB_TIMEOUT)
+	_, err = client.Delete(ctx, path)
+	cancel()
+
+	// if the error was nil, we return nil. Otherwise we return the error
+	return err
+}
