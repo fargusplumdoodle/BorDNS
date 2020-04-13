@@ -27,3 +27,10 @@ Config example in src/github.com/fargusplumdoodle/bordns/config.yml
 - Script that will generate simple Corefile from config.yml zones
 - Helm chart
 
+## Docker 
+An example script for running the BorDNS API alone: `scripts/docker_run_bordns_test.sh`
+
+But the BorDNS API is fairly useless without etcd and CoreDNS. 
+You can start the 3 of them with `docker-compose up`
+from the root of this repository
+
