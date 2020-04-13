@@ -6,6 +6,8 @@ COPY ./src .
 RUN go get -d -v ./...
 RUN go install  -v ./...
 
+ENV CONFIG=/config.yml
+
 EXPOSE 8000
 
-CMD ["app"]
+CMD ["bordns"]

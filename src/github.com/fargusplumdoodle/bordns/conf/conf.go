@@ -12,17 +12,18 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"os"
 	"time"
 )
 
 const (
-	CONFIG_FILE = "config.yml"
 	DB_TIMEOUT  = 5 * time.Second
 	DEFAULT_TTL = 60
 )
 
 var (
 	Env *Config
+	configFile = os.Getenv("CONFIG")
 )
 
 // config, yaml config must match this
@@ -41,13 +42,13 @@ func SetupConfig() {
 	var conf Config
 
 	// reading config
-	ymlfl, err := ioutil.ReadFile(CONFIG_FILE)
+	ymlfl, err := ioutil.ReadFile(configFile)
 	if err != nil {
-		panic(fmt.Errorf("unable to read conf: %q", CONFIG_FILE))
+		panic(fmt.Errorf("unable to read conf: %q", configFile))
 	}
 	err = yaml.Unmarshal(ymlfl, &conf)
 	if err != nil {
-		panic(fmt.Errorf("invalid conf: %q", CONFIG_FILE))
+		panic(fmt.Errorf("invalid conf: %q", configFile))
 	}
 
 	Env = &conf
