@@ -3,8 +3,8 @@ FROM golang:1.14
 WORKDIR /go/src/
 COPY ./src .
 
-RUN go get -d -v ./...
-RUN go install  -v ./...
+RUN go get -d -v ./... && \
+  go install  -v ./...
 
 ENV CONFIG=/config.yml
 
