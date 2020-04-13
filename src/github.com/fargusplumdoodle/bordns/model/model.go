@@ -132,11 +132,11 @@ func unReverseDomain(reversedDomain []string) string {
 	return strings.Join(unreversed, ".")
 }
 
+/*
+	Reverses the order of the elements of a slice:
+	Credit: https://github.com/golang/go/wiki/SliceTricks
+*/
 func reverseSlice(a []string) []string {
-	/*
-		Reverses the order of the elements of a slice:
-		Credit: https://github.com/golang/go/wiki/SliceTricks
-	*/
 	for i := len(a)/2 - 1; i >= 0; i-- {
 		opp := len(a) - 1 - i
 		a[i], a[opp] = a[opp], a[i]
@@ -147,4 +147,16 @@ func reverseSlice(a []string) []string {
 
 func getARecordValue(ip string) string {
 	return fmt.Sprintf(`{"host":"%v","ttl":%v}`, ip, conf.DEFAULT_TTL)
+}
+
+type CoreDNSARecord struct {
+	Host string `json:"host"` // host is the IP, thats just how CoreDNS does it
+	Ttl  int    `json:"ttl"`
+}
+
+/*
+
+ */
+func GetHostnameFromEtcdPath(zone, path string) string {
+	return path
 }

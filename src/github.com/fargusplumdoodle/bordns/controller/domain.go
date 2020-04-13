@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/fargusplumdoodle/bordns/conf"
+	"github.com/fargusplumdoodle/bordns/model"
 	"github.com/goji/httpauth"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -14,7 +15,14 @@ func (d domain) registerRoutes(r *mux.Router) {
 }
 
 func (d domain) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-	w.Write([]byte("TODO: show list of domains that are registered"))
-	// TODO: show list of domains that are registered
+	// get all domains
+	allDomains, err := model.GetAllDomains()
+
+	if err != nil {
+		respondBadRequest(w, err)
+	}
+
+	// encoding into json
+	encodeAllDomains(w, allDomains)
+
 }

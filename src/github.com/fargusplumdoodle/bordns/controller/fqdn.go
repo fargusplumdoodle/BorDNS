@@ -1,12 +1,9 @@
 package controller
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/fargusplumdoodle/bordns/conf"
 	"github.com/fargusplumdoodle/bordns/model"
-	"github.com/fargusplumdoodle/bordns/viewmodel"
 	"github.com/goji/httpauth"
 	"github.com/gorilla/mux"
 	"net"
@@ -71,34 +68,6 @@ func (f fqdn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-}
-
-func respondBadRequest(w http.ResponseWriter, err error) {
-	w.WriteHeader(http.StatusBadRequest)
-	w.Write([]byte(fmt.Sprintf(
-		"bad request: %q", err.Error(),
-	)))
-}
-
-func encodeARecord(w http.ResponseWriter, fqdn, ip string) {
-	/*
-		Writes A record response
-	*/
-	aRecord := viewmodel.Arecord{
-		IP:   ip,
-		FQDN: fqdn,
-	}
-
-	// encoding A record
-	enc := json.NewEncoder(w)
-	err := enc.Encode(&aRecord)
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("internal server error"))
-	} else {
-		w.Header().Set("Content-Type", "application/json")
-	}
 }
 
 /*

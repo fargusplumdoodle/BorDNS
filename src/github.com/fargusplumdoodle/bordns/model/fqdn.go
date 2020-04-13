@@ -8,11 +8,6 @@ import (
 	"strings"
 )
 
-type CoreDNSARecord struct {
-	Host string `json:"host"`
-	Ttl  int    `json:"ttl"`
-}
-
 func AddARecord(host string, ip string) error {
 	/*
 		Adds a record to the ETCD database
