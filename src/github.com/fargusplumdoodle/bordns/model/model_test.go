@@ -342,3 +342,25 @@ func TestDeleteARecord(t *testing.T) {
 
 	}
 }
+func TestGetHostNameFromEtcdPath(t *testing.T) {
+	/*
+		Checks to see if hosts were found properly
+	*/
+	// making table
+	table := []struct {
+		inZone string
+		inPath string
+		out    string
+	}{
+		{"/bor", "/bor/bor/test", "test.bor"},
+		{"/bor", "/bor/bor/test/something", "something.test.bor"},
+		{"/ra/sekhnet", "/ra/sekhnet/ra/sekhnet/bor/", "bor.sekhnet.ra"},
+	}
+
+	for _, x := range table {
+		result := GetHostnameFromEtcdPath(x.inZone, x.inPath)
+		if result != x.out {
+			t.Errorf("expected %q, got %q", x.out, result)
+		}
+	}
+}

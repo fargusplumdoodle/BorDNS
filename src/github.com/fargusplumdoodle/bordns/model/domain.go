@@ -3,7 +3,6 @@ package model
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/fargusplumdoodle/bordns/conf"
 	"github.com/fargusplumdoodle/bordns/viewmodel"
 	"go.etcd.io/etcd/clientv3"
@@ -28,7 +27,6 @@ func GetAllDomains() ([]viewmodel.Zone, error) {
 			return nil, err
 		}
 
-		fmt.Println("# keys: ", len(resp.Kvs))
 		for _, ev := range resp.Kvs {
 
 			// getting attributes from etcd. This will contain  {host: ip, ttl: 60}

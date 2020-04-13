@@ -155,8 +155,34 @@ type CoreDNSARecord struct {
 }
 
 /*
+Host names are stored in this format
+/zone/path + /reversed/domain/name
 
- */
+We want to isolate the domain name
+
+1. Split zone path and domain path by "/"
+2. Remove the zonepath from the path.
+3. Reverse the path, removing any potential trailing "."
+4. Join the path by "."
+*/
 func GetHostnameFromEtcdPath(zone, path string) string {
-	return path
+	// 1.
+	splitZone := strings.Split(zone, "/")
+	splitPath := strings.Split(path, "/")
+
+	// 2.
+	// this only works because the zone already is the prefix
+	// for the path
+	splitPath = splitPath[len(splitZone):]
+
+	// 3.
+	splitPath = reverseSlice(splitPath)
+
+	// ensuring no whitespace
+	if splitPath[0] == "" {
+		splitPath = splitPath[1:]
+	}
+
+	// 4.
+	return strings.Join(splitPath, ".")
 }
