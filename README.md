@@ -8,6 +8,7 @@ Sun Apr 12 09:48:06 PDT 2020
 ### Contents
 - [Description](##Description)
 - [Configuring](##Configuring)
+- [Client Usage](##Client Usage)
 - [Kubernetes](##Kubernetes)
 - [Docker](##Docker)
 - [Architecture](##Architecture)
@@ -24,6 +25,14 @@ Environment Variable Required:
   `CONFIG = (path to config)`
 
 Config example in src/github.com/fargusplumdoodle/bordns/config.yml
+
+## Client Usage
+
+Postman collection in `docs/BorDNS.postman_collection.json` for debugging
+and for full API spec.
+
+I haven't made an actual client yet.
+
 
 ## Kubernetes:
 
