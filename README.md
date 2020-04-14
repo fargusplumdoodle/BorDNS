@@ -1,10 +1,5 @@
 
 # BorDNS
-Isaac Thiessen
-
-Sun Apr 12 09:48:06 PDT 2020
-
-
 ### Contents
 - [Description](##Description)
 - [Configuring](##Configuring)
