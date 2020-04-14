@@ -19,6 +19,8 @@ Commands:
   - deletes A record for `example.bor` 
 - `sudo dnsctl generate-config`
   - Creates example config file in /etc/bordns/client_conf.yaml
+- `dnsctl help`
+  - prints commands
 
 ### Configuration
 Config file location:
@@ -81,21 +83,24 @@ generated config in: /etc/bordns/config.yml
 $ dnsctl generate-config
 error: requires elevated privileges to generate config
 ```
-#### Invalid arguments
+#### help
 ```
-$ dnsctl something that dnsctl doesnt understand
-dnsctl: 
-  invalid arguments supplied
-
-Valid commands:
+$ dnsctl help
+dnsctl commands:
     dnsctl get all
       - returns all A records in database
     dnsctl get example.bor
       - returns ip address of "example.bor"
-    dnsctl set example.bor 192.168.0.1`
+    dnsctl set example.bor 192.168.0.1
       - creates an A record for "example.bor" with the IP of "192.168.0.1"
     dnsctl del example.bor
       - deletes A record for "example.bor"
+    dnsctl help
+      - prints help message
     sudo dnsctl generate-config
       - Creates example config file in /etc/bordns/client_conf.yaml
 ```
+#### Error occured
+If something goes wrong, or invalid arguments were supplied
+The help message will be displayed with the specific error
+after
