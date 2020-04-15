@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"net/http"
 	"os"
 )
 
@@ -11,17 +12,17 @@ import (
 DNSCTL
 -------
 All info is in the README
- */
+*/
 
 const (
-	CONF_FILE = "/etc/bordns/client_conf.yaml"
-	CMD_ALL	= "all"
-	CMD_GET = "get"
-	CMD_SET = "set"
-	CMD_DEL = "del"
-	CMD_HELP = "help"
+	CONF_FILE      = "/etc/bordns/client_conf.yml"
+	CMD_ALL        = "all"
+	CMD_GET        = "get"
+	CMD_SET        = "set"
+	CMD_DEL        = "del"
+	CMD_HELP       = "help"
 	CMD_GEN_CONFIG = "generate-config"
-	HELP_MSG = `
+	HELP_MSG       = `
 dnsctl commands:
   dnsctl get all
     - returns all A records in database
@@ -36,15 +37,17 @@ dnsctl commands:
   sudo dnsctl generate-config
     - Creates example config file in /etc/bordns/client_conf.yaml`
 )
+
 var (
 	conf Conf
 )
+
 /*
 Procedure:
 	1. Read configuration
 	2. Determine command
 	3. Run command
- */
+*/
 func main() {
 	// validating input
 	if len(os.Args) <= 1 {
@@ -64,7 +67,7 @@ Determine Command
 Runs through arguments and
 determines which command the user
 has requested.
- */
+*/
 func determineCommand() {
 	switch os.Args[1] {
 	case CMD_GET:
@@ -89,8 +92,8 @@ func determineCommand() {
 
 func Fail(errMsg string) {
 	/*
-	Prints help, then the error message
-	 */
+		Prints help, then the error message
+	*/
 	Help()
 	fmt.Println("\nerror:", errMsg)
 	os.Exit(1)
@@ -125,7 +128,30 @@ type Conf struct {
 }
 
 func GetAll() {
-	fmt.Println("getting all: ", conf.Username)
+	/*
+		Shows all known dns names and their values
+
+		Procedure:
+			1. Make HTTP GET request to bordns/domain
+			2. For each zone, print all dns names
+	*/
+	url := GetURLWithTrailingSlash(conf.BorDNSHost) + "domain"
+	// TODO: making request
+	client := http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+
+	if err != nil {
+		Fail("failed to make request to bordns: " + err.Error())
+	}
+
+	req.SetBasicAuth(conf.Username, conf.Password)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		Fail("failed to make request to bordns: " + err.Error())
+	}
+
+	fmt.Println("getting all: ", resp)
 }
 func Get() {
 	fmt.Println("get")
@@ -138,4 +164,18 @@ func Del() {
 }
 func GenerateConf() {
 	fmt.Println("generate conf")
+}
+
+func GetURLWithTrailingSlash(url string) string {
+	/*
+		Takes a given URL, if it doesn't end in a slash
+		we add the slash
+	*/
+	// if the last character is a slash, return
+	if url[len(url)-1] == []byte("/")[0] {
+		return url
+	} else {
+		return url + "/"
+	}
+
 }

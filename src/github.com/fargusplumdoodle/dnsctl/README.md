@@ -18,13 +18,13 @@ Commands:
 - `dnsctl del example.bor`
   - deletes A record for `example.bor` 
 - `sudo dnsctl generate-config`
-  - Creates example config file in /etc/bordns/client_conf.yaml
+  - Creates example config file in /etc/bordns/client_conf.yml
 - `dnsctl help`
   - prints commands
 
 ### Configuration
 Config file location:
-    /etc/bordns/client_conf.yaml
+    /etc/bordns/client_conf.yml
    
 Example config:
 ```yaml
@@ -98,7 +98,7 @@ dnsctl commands:
     dnsctl help
       - prints help message
     sudo dnsctl generate-config
-      - Creates example config file in /etc/bordns/client_conf.yaml
+      - Creates example config file in /etc/bordns/client_conf.yml
 ```
 #### Error occured
 If something goes wrong, or invalid arguments were supplied

@@ -16,17 +16,17 @@ services:
     networks:
       dnsnet:
         ipv4_address: 172.19.0.2
-  #bordns:
-    #build: 
-      #context: .
-      #dockerfile: ./docker/Dockerfile
-    #networks:
-      #dnsnet:
-        #ipv4_address: 172.19.0.4
-    #volumes:
-      #- ./docker/bordns_config/config.yml:/config.yml
-    #ports:
-      #- "8000:8000"
+  bordns:
+    build: 
+      context: .
+      dockerfile: ./docker/Dockerfile
+    networks:
+      dnsnet:
+        ipv4_address: 172.19.0.4
+    volumes:
+      - ./docker/bordns_config/config.yml:/config.yml
+        #    ports:
+        #      - "8000:8000"
 
 
 networks:
