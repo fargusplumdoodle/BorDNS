@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -15,6 +16,7 @@ All info is in the README
 */
 
 const (
+	WHITE_SPACE = 20
 	CONF_FILE      = "/etc/bordns/client_conf.yml"
 	CMD_ALL        = "all"
 	CMD_GET        = "get"
@@ -126,6 +128,15 @@ type Conf struct {
 	Password   string `yaml:"auth_password"`
 	BorDNSHost string `yaml:"bordns_host"`
 }
+type Arecord struct {
+	IP   string `json:"ip"`
+	FQDN string `json:"fqdn"`
+}
+
+type Zone struct {
+	Name    string    `json:"zone"`
+	Domains []Arecord `json:"domains"`
+}
 
 func GetAll() {
 	/*
@@ -133,26 +144,69 @@ func GetAll() {
 
 		Procedure:
 			1. Make HTTP GET request to bordns/domain
-			2. For each zone, print all dns names
+			2. Load input
+			2. For each zones, print all dns names
 	*/
-	url := GetURLWithTrailingSlash(conf.BorDNSHost) + "domain"
-	// TODO: making request
-	client := http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
+	resp := MakeRequest(http.MethodGet, "domain")
 
+	var zones []Zone
+	dec := json.NewDecoder(resp.Body)
+	err := dec.Decode(&zones)
+	if err != nil {
+		Fail("invalid response from bordns" + err.Error())
+	}
+
+	for _, zone := range zones {
+		fmt.Println("zones: " + zone.Name)
+
+		for _, domain := range zone.Domains {
+			space_amount := WHITE_SPACE - len(domain.FQDN)
+			space := ""
+			for i := 0; i < space_amount; i++ {
+				space = space + " "
+			}
+			fmt.Println(domain.FQDN, space, domain.IP)
+		}
+		fmt.Println()
+	}
+}
+
+func MakeRequest(method, uri string) *http.Response {
+	/*
+		Make request to BorDNS
+
+		Args:
+			method: the HTTP method to make the request with
+		    uri: the URI to make, with no leading forward slash
+
+		Procedure:
+			1. Get URL
+			2. Make request
+			3. set credentials
+			4. Make request
+	*/
+	// 1. Get URL
+	url := GetURLWithTrailingSlash(conf.BorDNSHost) + uri
+
+	// 2. Make Request
+	client := http.Client{}
+	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		Fail("failed to make request to bordns: " + err.Error())
 	}
 
+	// 3. Set Credentials
 	req.SetBasicAuth(conf.Username, conf.Password)
 
+	// 4. Make request
 	resp, err := client.Do(req)
 	if err != nil {
 		Fail("failed to make request to bordns: " + err.Error())
 	}
 
-	fmt.Println("getting all: ", resp)
+	return resp
 }
+
 func Get() {
 	fmt.Println("get")
 }
