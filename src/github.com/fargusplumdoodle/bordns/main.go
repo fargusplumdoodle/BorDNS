@@ -6,6 +6,7 @@ import (
 	"github.com/fargusplumdoodle/bordns/controller"
 	"github.com/fargusplumdoodle/bordns/model"
 	"github.com/gorilla/handlers"
+	"log"
 	"net/http"
 	"os"
 )
@@ -26,8 +27,8 @@ func main() {
 
 	// running server!
 	fmt.Println("Starting BorDNS API on port 8000, connected to etcd", client.Endpoints())
-	http.ListenAndServe(conf.Env.ListenAddr, loggedRouter)
-
-	// this should never execute, im still learning this all
-	fmt.Println("Exiting! There was probably an error")
+	err := http.ListenAndServe(conf.Env.ListenAddr, loggedRouter)
+	if err != nil {
+		log.Fatalf("server failed to start: %q", err)
+	}
 }
