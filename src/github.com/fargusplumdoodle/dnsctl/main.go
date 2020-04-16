@@ -145,10 +145,12 @@ func GetAll() {
 		Procedure:
 			1. Make HTTP GET request to bordns/domain
 			2. Load input
-			2. For each zones, print all dns names
+			3. For each zones, print all dns names
 	*/
+	// 1.
 	resp := MakeRequest(http.MethodGet, "domain")
 
+	// 2.
 	var zones []Zone
 	dec := json.NewDecoder(resp.Body)
 	err := dec.Decode(&zones)
@@ -156,13 +158,15 @@ func GetAll() {
 		Fail("invalid response from bordns" + err.Error())
 	}
 
+	// 3.
 	for _, zone := range zones {
 		fmt.Println("zones: " + zone.Name)
 
 		for _, domain := range zone.Domains {
-			space_amount := WHITE_SPACE - len(domain.FQDN)
+			// calculating whitespace
+			spaceAmount := WHITE_SPACE - len(domain.FQDN)
 			space := ""
-			for i := 0; i < space_amount; i++ {
+			for i := 0; i < spaceAmount; i++ {
 				space = space + " "
 			}
 			fmt.Println(domain.FQDN, space, domain.IP)
@@ -208,7 +212,34 @@ func MakeRequest(method, uri string) *http.Response {
 }
 
 func Get() {
-	fmt.Println("get")
+	/*
+		Gets IP of FQDN
+
+		Procedure:
+			0. Ensure FQDN was supplied
+			1. Make HTTP GET request to bordns/fqdn?FQDN=<fqdn>
+			2. Load input
+			3. For each zones, print all dns names
+	*/
+	// 0.
+	if len(os.Args) != 3 {
+		Fail("Invalid arguments. 'get' command requires FQDN to lookup")
+	}
+	// 1.
+	resp := MakeRequest(http.MethodGet, "fqdn?FQDN=" + os.Args[2])
+	if resp.StatusCode != 200 {
+		body, err := ioutil.ReadAll(resp.Body)
+		fmt.Println("failed", string(body), err)
+		return
+	}
+	// 2.
+	var arecord Arecord
+	dec := json.NewDecoder(resp.Body)
+	err := dec.Decode(&arecord)
+	if err != nil {
+		Fail("invalid response from bordns" + err.Error())
+	}
+	fmt.Println("get", arecord.FQDN, arecord.IP)
 }
 func Set() {
 	fmt.Println("set")
