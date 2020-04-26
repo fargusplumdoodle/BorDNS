@@ -81,6 +81,37 @@
 			"response": []
 		},
 		{
+			"name": "Get All Records",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Name\": \"dargsr\",\n\t\"email\": \"fargus@sekhnet.ra\",\n\t\"password\": \"1234asdf\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{HOST}}:{{PORT}}/domain",
+					"protocol": "http",
+					"host": [
+						"{{HOST}}"
+					],
+					"port": "{{PORT}}",
+					"path": [
+						"domain"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete A Record",
 			"request": {
 				"method": "DELETE",
@@ -119,13 +150,13 @@
 		"type": "basic",
 		"basic": [
 			{
-				"key": "password",
-				"value": "dev",
+				"key": "username",
+				"value": "fargus",
 				"type": "string"
 			},
 			{
-				"key": "username",
-				"value": "dev",
+				"key": "password",
+				"value": "7YO8n1UhXFzS2mGTZ2Z5zQ==",
 				"type": "string"
 			}
 		]
@@ -154,13 +185,13 @@
 	],
 	"variable": [
 		{
-			"id": "47e5098f-a160-4026-8a98-395997378ce6",
+			"id": "74b11c89-5ac9-40bd-ad6f-ba38542215a6",
 			"key": "HOST",
 			"value": "localhost",
 			"type": "string"
 		},
 		{
-			"id": "c305cc1b-ba31-44c5-8ceb-6af8c266fa98",
+			"id": "643f35dd-970a-43ac-bb01-f9cec8f3cb6c",
 			"key": "PORT",
 			"value": "8000",
 			"type": "string"
