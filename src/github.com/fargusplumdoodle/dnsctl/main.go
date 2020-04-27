@@ -24,6 +24,10 @@ const (
 	CMD_DEL        = "del"
 	CMD_HELP       = "help"
 	CMD_GEN_CONFIG = "generate-config"
+	EXAMPLE_CONF = `auth_username: dev
+auth_password: dev
+bordns_host: http://localhost:8000
+`
 	HELP_MSG       = `
 dnsctl commands:
   dnsctl get all
@@ -55,8 +59,10 @@ func main() {
 	if len(os.Args) <= 1 {
 		Fail("invalid arguments")
 	}
-	// Read conf
-	conf = ReadConf(CONF_FILE)
+	// Read conf, if we are generating the conf then we dont try to read the conf
+	if os.Args[1] != CMD_GEN_CONFIG {
+		conf = ReadConf(CONF_FILE)
+	}
 
 	// Determining command
 	determineCommand()
@@ -292,7 +298,43 @@ func Del() {
 	}
 }
 func GenerateConf() {
-	fmt.Println("generate conf")
+	/*
+	Generate Conf
+
+	Procedure:
+		1. Check if /etc/bordns exists
+			- if it doesnt, attempt to create it
+	          - fail if that didn't work
+	    2. If conf file exists, exit
+	    3. Create example conf
+
+	 */
+	var confDir = "/etc/bordns"
+	// 1.
+	if _, err := os.Stat(confDir); os.IsNotExist(err) {
+		fmt.Println(confDir  + " doesn't exist, attempting to create it")
+
+		err = os.Mkdir(confDir, 0700)
+		if err != nil {
+			Fail("Unable to create conf dir "  + confDir  + ", did you run with sudo?")
+		}
+		err = os.Chown("root", 0, 0)
+		if err != nil {
+			Fail("Unable to set owner of "  + confDir  + " to root, did you run with sudo?")
+		}
+	}
+	// 2. if conf file exists exit
+	if _, err := os.Stat(CONF_FILE); !os.IsNotExist(err) {
+		fmt.Println(CONF_FILE + " already exists")
+		return
+	}
+	// 3.
+	err := ioutil.WriteFile(CONF_FILE, []byte(EXAMPLE_CONF), 0644)
+	if err != nil {
+		Fail("Unable to create conf " + CONF_FILE + ", did you run with sudo?")
+	}
+
+	fmt.Println("generated config in: " + CONF_FILE)
 }
 
 func GetURLWithTrailingSlash(url string) string {
