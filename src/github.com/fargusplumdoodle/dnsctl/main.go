@@ -239,7 +239,7 @@ func Get() {
 	if err != nil {
 		Fail("invalid response from bordns" + err.Error())
 	}
-	fmt.Println("get", arecord.FQDN, arecord.IP)
+	fmt.Println(arecord.FQDN, arecord.IP)
 }
 func Set() {
 	fmt.Println("set")
