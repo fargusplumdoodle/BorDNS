@@ -228,8 +228,8 @@ func Get() {
 	// 1.
 	resp := MakeRequest(http.MethodGet, "fqdn?FQDN=" + os.Args[2])
 	if resp.StatusCode != 200 {
-		body, err := ioutil.ReadAll(resp.Body)
-		fmt.Println("failed", string(body), err)
+		body, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println("failed", string(body))
 		return
 	}
 	// 2.
@@ -249,15 +249,16 @@ func Set() {
 			0. Ensure FQDN was supplied
 			1. Make HTTP POST request to bordns/fqdn?FQDN=<fqdn>?IP=<ip>
 			2. Load input
-			3. For each zones, print all dns names
+			3. if there was an issue, print it
 	*/
 	// 0.
 	if len(os.Args) != 4 {
-		Fail("Invalid arguments. 'set' command requires FQDN to lookup")
+		Fail("Invalid arguments. 'set' command requires FQDN and IP")
 	}
 	// 1.
 	resp := MakeRequest(http.MethodPost, "fqdn?FQDN=" + os.Args[2] + "&IP=" + os.Args[3])
 	if resp.StatusCode != 201 {
+		// 3.
 		body, _ := ioutil.ReadAll(resp.Body)
 		fmt.Println("failed", string(body))
 		return
@@ -266,7 +267,29 @@ func Set() {
 	}
 }
 func Del() {
-	fmt.Println("del")
+	/*
+		Deletes A record
+
+		Procedure:
+			0. Ensure FQDN was supplied
+			1. Make HTTP POST request to bordns/fqdn?FQDN=<fqdn>?IP=<ip>
+			2. Load input
+			3. if there was an issue, print it
+	*/
+	// 0.
+	if len(os.Args) != 3 {
+		Fail("Invalid arguments. 'del' command requires FQDN to delete")
+	}
+	// 1.
+	resp := MakeRequest(http.MethodDelete, "fqdn?FQDN=" + os.Args[2])
+	if resp.StatusCode != 201 {
+		// 3.
+		body, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println("failed", string(body))
+		return
+	} else {
+		fmt.Println("boop... gone")
+	}
 }
 func GenerateConf() {
 	fmt.Println("generate conf")
