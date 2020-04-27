@@ -242,7 +242,28 @@ func Get() {
 	fmt.Println(arecord.FQDN, arecord.IP)
 }
 func Set() {
-	fmt.Println("set")
+	/*
+		Sets IP of FQDN
+
+		Procedure:
+			0. Ensure FQDN was supplied
+			1. Make HTTP POST request to bordns/fqdn?FQDN=<fqdn>?IP=<ip>
+			2. Load input
+			3. For each zones, print all dns names
+	*/
+	// 0.
+	if len(os.Args) != 4 {
+		Fail("Invalid arguments. 'set' command requires FQDN to lookup")
+	}
+	// 1.
+	resp := MakeRequest(http.MethodPost, "fqdn?FQDN=" + os.Args[2] + "&IP=" + os.Args[3])
+	if resp.StatusCode != 201 {
+		body, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println("failed", string(body))
+		return
+	} else {
+		fmt.Println("ok")
+	}
 }
 func Del() {
 	fmt.Println("del")
