@@ -20,3 +20,20 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 8000
+    
+---
+# This is only for the kube-system coredns accessing etcd
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd-dns-svc
+  namespace: bordns 
+  labels:
+    app: dns
+spec:
+  selector:
+    app: dns
+  ports:
+    - protocol: TCP
+      port: 2379
+      targetPort: 2379
