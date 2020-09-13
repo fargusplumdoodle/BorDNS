@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bordns-deployment
-  namespace: bordns 
+  namespace: bordns
   labels:
     app: dns
 spec:
@@ -18,8 +18,9 @@ spec:
     spec:
       volumes:
         - name: data
-          persistentVolumeClaim:
-            claimName: etcd-pvc
+          nfs:
+            server: 10.0.1.30
+            path: /mnt/horus/k8-data/bordns
         - name: corefile
           secret:
             secretName: corefile-secret

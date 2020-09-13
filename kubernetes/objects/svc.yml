@@ -2,32 +2,46 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: dns-svc
-  namespace: bordns 
+  name: bordns-svc
+  namespace: bordns
   labels:
     app: dns
 spec:
+  type: LoadBalancer
   selector:
     app: dns
-  externalIPs:
-    - 10.0.1.253
+  loadBalancerIP: 10.0.1.252
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dns-svc
+  namespace: bordns
+  labels:
+    app: dns
+spec:
+  type: LoadBalancer
+  selector:
+    app: dns
+  loadBalancerIP: 10.0.1.253
   ports:
     - name: dns
       protocol: UDP
       port: 53
       targetPort: 53
-    - name: http
-      protocol: TCP
-      port: 80
-      targetPort: 8000
-    
+
 ---
 # This is only for the kube-system coredns accessing etcd
 apiVersion: v1
 kind: Service
 metadata:
   name: etcd-dns-svc
-  namespace: bordns 
+  namespace: bordns
   labels:
     app: dns
 spec:

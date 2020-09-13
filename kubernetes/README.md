@@ -15,7 +15,12 @@ Sat Apr 11 17:28:38 PDT 2020
 
 ## Description
 
-Simple deployment for BorDNS, CoreDNS, and ETCD.
+Simple deployment for BorDNS, CoreDNS, and ETCD. Helm chart is probably on the way
+
+## Defaults
+2 external services are created with type LoadBalancer:
+- 10.0.1.253:53 CoreDNS DNS server
+- 10.0.1.252:80 BorDNS HTTP server (make requests here)
 
 ## Generate secrets/configs
 
@@ -29,9 +34,9 @@ The output will be
 
 1. Generate your secrets
 2. Create namespace
-`kubectl apply -f ./objects/ns.yml`
+`kubectl create ns bordns`
 3. Apply configuration
-`kubectl apply -f ./conf/bordns-secrets.yml`
+`kubectl apply -f ./conf/`
 4. Apply objects
 `kubectl apply -f ./objects`
 
