@@ -1,0 +1,18 @@
+---
+image:
+  repository: hub.sekhnet.ra/bordns
+  pullPolicy: Always
+  tag: "latest"
+
+service:
+  type: LoadBalancer
+  loadBalancerIP: 10.0.1.212
+  port: 80
+
+conf:
+  auth:
+    username: user
+    password: password
+  zones:
+    - zone: bordns.ra
+      path: /ra/bordns

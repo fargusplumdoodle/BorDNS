@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "fullname" . }}-cm
+  labels:
+    app: {{ include "fullname" . }}
+data:
+  config.yml: |-
+    etcd_hosts:
+      - {{ .Release.Name }}-etcd:2379
+
+    auth_username: {{ .Values.conf.auth.username }}
+    auth_password: {{ .Values.conf.auth.password }}
+
+    listen_address: ":8000"
+
+    zones:
+     {{range .Values.conf.zones -}}
+      - zone: {{ .zone | quote }}
+       path: {{ .path | quote }}
+     {{ end}}

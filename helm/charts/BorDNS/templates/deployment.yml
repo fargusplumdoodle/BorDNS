@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fullname" . }}-deployment
+  labels:
+    app: {{ include "fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "fullname" . }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ include "fullname" . }}
+    spec:
+      volumes:
+        - name: {{ include "fullname" . }}-cm
+          configMap:
+            name: {{ include "fullname" . }}-cm
+      containers:
+        - name: bordns
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 8000
+          env:
+            - name: CONFIG
+              value: /conf/config.yml
+          volumeMounts:
+            - name: {{ include "fullname" . }}-cm
+              mountPath: /conf/config.yml
+              subPath: config.yml
