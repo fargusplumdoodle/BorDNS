@@ -1,10 +1,4 @@
-# Default values for bordns.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-replicaCount: 1
-
-
+---
 bordns:
   image:
     repository: hub.sekhnet.ra/bordns
@@ -13,7 +7,8 @@ bordns:
 
   service:
     type: LoadBalancer
-    loadBalancerIP: 10.0.1.212
+    bordnsLoadBalancerIP: 10.0.1.212
+    dnsLoadBalancerIP: 10.0.1.213
     port: 80
 
   conf:
@@ -21,20 +16,10 @@ bordns:
       username: user
       password: password
     zones:
-      - zone: bordns.ra
-        path: /ra/bordns
-
-coredns:
-  image:
-    repository: coredns/cordns
-    pullPolicy: Always
-    # Overrides the image tag whose default is the chart version.
-    tag: ""
-
-  service:
-    type: LoadbalancerIP
-    loadBalancerIP: 10.0.1.213
-    port: 80
+      - zone: bor
+        path: /bor
+      - zone: sekhnet.ra
+        path: /ra/sekhnet
 
 etcd:
   storage:

@@ -16,9 +16,12 @@ spec:
         app: {{ include "fullname" . }}
     spec:
       volumes:
-        - name: {{ include "fullname" . }}-cm
+        - name: {{ include "fullname" . }}-bordns-cm
           configMap:
-            name: {{ include "fullname" . }}-cm
+            name: {{ include "fullname" . }}-bordns-cm
+        - name: {{ include "fullname" . }}-coredns-cm
+          configMap:
+            name: {{ include "fullname" . }}-coredns-cm
       containers:
         - name: bordns
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -28,6 +31,17 @@ spec:
             - name: CONFIG
               value: /conf/config.yml
           volumeMounts:
-            - name: {{ include "fullname" . }}-cm
+            - name: {{ include "fullname" . }}-bordns-cm
               mountPath: /conf/config.yml
               subPath: config.yml
+
+        - name: coredns
+          image: "coredns/coredns:latest"
+          ports:
+            - containerPort: 9100
+            - containerPort: 53
+          volumeMounts:
+            - name: {{ include "fullname" . }}-coredns-cm
+              mountPath: /root/Corefile
+              subPath: Corefile
+          args: ["-conf", "/root/Corefile"]

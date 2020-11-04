@@ -2,3 +2,5 @@ src/github.com/fargusplumdoodle/bordns/.idea
 src/github.com/fargusplumdoodle/dnsctl/.idea
 .idea
 kubernetes/conf/
+helm/scripts/install-prod
+**/*.swp

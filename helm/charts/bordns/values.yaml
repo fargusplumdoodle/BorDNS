@@ -6,7 +6,8 @@ image:
 
 service:
   type: LoadBalancer
-  loadBalancerIP: 10.0.1.212
+  bordnsLoadBalancerIP: 10.0.1.212
+  dnsLoadBalancerIP: 10.0.1.213
   port: 80
 
 conf:
@@ -14,5 +15,7 @@ conf:
     username: user
     password: password
   zones:
-    - zone: bordns.ra
-      path: /ra/bordns
+    - zone: bor
+      path: /bor
+    - zone: sekhnet.ra
+      path: /ra/sekhnet

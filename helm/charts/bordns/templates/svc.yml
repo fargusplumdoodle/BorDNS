@@ -2,14 +2,31 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "fullname" . }}-svc
+  name: {{ include "fullname" . }}-bordns-svc
 spec:
   type: {{ .Values.service.type }}
-  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.service.bordnsLoadBalancerIP }}
   ports:
     - name: http
       port: {{ .Values.service.port }}
       protocol: TCP
       targetPort: 8000
+    - name: metrics
+      port: 9100
+      protocol: TCP
   selector:
     app: {{ include "fullname" . }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fullname" . }}-coredns-svc
+spec:
+  type: {{ .Values.service.type }}
+  loadBalancerIP: {{ .Values.service.dnsLoadBalancerIP }}
+  selector:
+    app: {{ include "fullname" . }}
+  ports:
+    - name: dns
+      port: 53
+      protocol: UDP

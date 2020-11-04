@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "fullname" . }}-cm
+  name: {{ include "fullname" . }}-bordns-cm
   labels:
     app: {{ include "fullname" . }}
 data:
@@ -20,3 +20,27 @@ data:
       - zone: {{ .zone | quote }}
        path: {{ .path | quote }}
      {{ end}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "fullname" . }}-coredns-cm
+  labels:
+    app: {{ include "fullname" . }}
+data:
+  Corefile: |-
+        .:53 {
+                log
+                errors
+                prometheus 0.0.0.0:9100
+        }
+        {{range .Values.conf.zones -}}
+        {{ .zone }} {
+                log
+                errors
+                etcd  {
+                        path {{ .path }}
+                        endpoint http://{{ $.Release.Name }}-etcd-svc:2379
+                }
+        }
+        {{ end}}
