@@ -8,7 +8,7 @@ metadata:
 data:
   config.yml: |-
     etcd_hosts:
-      - {{ .Release.Name }}-etcd:2379
+      - {{ .Release.Name }}-etcd-svc:2379
 
     auth_username: {{ .Values.conf.auth.username }}
     auth_password: {{ .Values.conf.auth.password }}

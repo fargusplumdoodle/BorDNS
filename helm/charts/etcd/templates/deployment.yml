@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fullname" . }}-deployment
+  labels:
+    app: {{ include "fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "fullname" . }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ include "fullname" . }}
+    spec:
+{{- if .Values.storage.persist }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "fullname" . }}-pvc
+{{- end }}
+      containers:
+        - name: etcd
+          image: quay.io/coreos/etcd:latest
+{{- if .Values.storage.persist }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/run/etcd
+{{- end }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+                etcd --name etcd \
+                --listen-client-urls=http://0.0.0.0:2379 \
+                --listen-peer-urls=http://localhost:2380 \
+                --advertise-client-urls=http://0.0.0.0:2379 \
+                --initial-cluster-token=etcd-cluster-1 \
+                --initial-cluster=etcd=http://localhost:2380 \
+                --initial-cluster-state=new \
+                --data-dir=/var/run/etcd/default.etcd

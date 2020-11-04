@@ -1,0 +1,6 @@
+storage:
+  persist: false
+  nfs:
+    path: /
+    server: 10.0.0.1
+  size: 1Gi

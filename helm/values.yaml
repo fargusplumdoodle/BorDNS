@@ -35,3 +35,11 @@ coredns:
     type: LoadbalancerIP
     loadBalancerIP: 10.0.1.213
     port: 80
+
+etcd:
+  storage:
+    persist: false
+    nfs:
+      path: /
+      server: 10.0.0.1
+    size: 1Gi
